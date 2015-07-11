@@ -76,6 +76,17 @@
 										<include name="**/*.class" />
 									</fileset>
 								</copy>
+								
+								<delete
+									dir="${project.build.directory}/${project.artifactId}-${project.version}/server/" />
+								<mkdir
+									dir="${project.build.directory}/${project.artifactId}-${project.version}/server/" />
+								<copy
+									todir="${project.build.directory}/${project.artifactId}-${project.version}/server/">
+									<fileset dir="${project.build.directory}/classes/generic/">
+										<include name="**/*.class" />
+									</fileset>
+								</copy>
 
 
 								<delete

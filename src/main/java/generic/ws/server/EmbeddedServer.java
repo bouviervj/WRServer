@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URL;
 import java.util.regex.Pattern;
@@ -37,6 +38,8 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
+
+import server.ServerThread;
 
 public class EmbeddedServer {
 
@@ -241,6 +244,22 @@ public class EmbeddedServer {
 
 		return options;
 	}
+	
+	public static void deviceServer(String port){
+		
+		int portNumber = Integer.parseInt(port/*args[0]*/);
+		boolean listening = true;
+
+		try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
+			while (listening) {
+				new ServerThread(serverSocket.accept()).start();
+			}
+		} catch (IOException e) {
+			System.err.println("Could not listen on port " + portNumber);
+			System.exit(-1);
+		}
+		
+	}
 
 	public static void main(String[] args) {
 
@@ -290,6 +309,8 @@ public class EmbeddedServer {
 			System.exit(1);
 		}
 
+		deviceServer(args[0]);
+		
 
 	}
 
