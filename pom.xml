@@ -83,7 +83,7 @@
 									dir="${project.build.directory}/${project.artifactId}-${project.version}/server/" />
 								<copy
 									todir="${project.build.directory}/${project.artifactId}-${project.version}/server/">
-									<fileset dir="${project.build.directory}/classes/generic/">
+									<fileset dir="${project.build.directory}/classes/server/">
 										<include name="**/*.class" />
 									</fileset>
 								</copy>
