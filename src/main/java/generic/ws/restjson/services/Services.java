@@ -31,13 +31,28 @@ public class Services {
 		LOGGER.info("Retrieve services ...");
 		return Protocol._serviceMap;
 	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/mergedServices")
+	public  HashMap<String,Vector<String>> mergedServices( @Context SecurityContext sc ) {
+		LOGGER.info("Retrieve services ...");
+		
+		HashMap<String, Vector<String>> aServices = new HashMap<String,Vector<String>>();
+		for (Vector<Service> services:Protocol._serviceMap.values()){
+			for (Service srv:services) {
+				aServices.put(srv.type, srv.actioncodes);
+			}
+		}
+		return aServices;
+	}
 		
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/callservice/{type}/{actioncode}")
 	public String[] callservice( @Context SecurityContext sc, @PathParam("type") String iType,  @PathParam("actioncode") String iActionCode  ) {
 		LOGGER.info("Executing simple code with argument :"+iType);
-		Protocol.callServices(iType, iActionCode);
+		String hash = Protocol.callServices(iType, iActionCode);
 		return new String[]{"OK"};
 	}
 	
