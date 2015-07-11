@@ -1,5 +1,8 @@
 package generic.ws.restjson.services;
 
+import java.util.HashMap;
+import java.util.Vector;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -13,6 +16,9 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.apache.log4j.Logger;
 
+import server.Protocol;
+import server.transaction.Service;
+
 @Path("/v1")
 public class Services {
 
@@ -20,18 +26,19 @@ public class Services {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/simple")
-	public String[] simple( @Context SecurityContext sc ) {
-		LOGGER.info("Returning result ...");
-		return new String[]{"This is a test"};
+	@Path("/services")
+	public  HashMap<String,Vector<Service>> services( @Context SecurityContext sc ) {
+		LOGGER.info("Retrieve services ...");
+		return Protocol._serviceMap;
 	}
 		
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/simpleArg/{path}")
-	public String[] simpleArg( @Context SecurityContext sc, @PathParam("path") String iPath  ) {
-		LOGGER.info("Executing simple code with argument :"+iPath);
-		return new String[]{"This is a test"};
+	@Path("/callservice/{type}")
+	public String[] callservice( @Context SecurityContext sc, @PathParam("type") String iType  ) {
+		LOGGER.info("Executing simple code with argument :"+iType);
+		Protocol.callServices(iType);
+		return new String[]{"OK"};
 	}
 	
 	@POST
