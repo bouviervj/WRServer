@@ -303,7 +303,14 @@
 			<artifactId>commons-net</artifactId>
 			<version>3.3</version>
 		</dependency>
-
+		
+		
+        <dependency>
+            <groupId>com.att.m2x</groupId>
+            <artifactId>java</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+    
 
 		<!-- Normal features -->
 

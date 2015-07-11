@@ -1,5 +1,6 @@
 package server;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -7,6 +8,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
+
+import com.att.m2x.java.M2XClient;
+import com.att.m2x.java.M2XDevice;
+import com.att.m2x.java.M2XStream;
 
 import server.transaction.Action;
 import server.transaction.Entity;
@@ -24,6 +29,27 @@ public class Protocol {
 
 	public static HashMap<String,Vector<Service>> _serviceMap = new HashMap<String,Vector<Service>>();
 	public static HashMap<String,Reply> _repliesMap = new HashMap<String,Reply>();
+	
+	public static M2XDevice deviceLight;
+	public static M2XStream streamLight;
+	public static M2XStream streamLightOn;
+	public static M2XStream streamLightOff;
+	
+	public static M2XDevice deviceTemperature;
+	public static M2XStream streamTemperature;
+	
+	static {
+		
+		M2XClient client = new M2XClient("ad3abc434190389d8d14df56fcc691f4");
+		deviceLight = client.device("712b1d5519fabfcb19bb5a206e47cb4f");
+		streamLight = deviceLight.stream("light");
+		streamLightOn = deviceLight.stream("lighton");
+		streamLightOff = deviceLight.stream("lightoff");
+		
+		deviceTemperature = client.device("dc2cd9c1cd7739fef52afee7747c5fbf");
+		streamTemperature = deviceTemperature.stream("temperature");
+		
+	}
 
 
 	public Message processInput(ServerThread thread, Message theInput) {
@@ -100,7 +126,6 @@ public class Protocol {
 				if (srv.type.equals(iType)) {
 					return srv;
 				}
-				
 			}
 		}
 		return null;
@@ -108,7 +133,10 @@ public class Protocol {
 	
 	public static boolean isReplyExpected(String iType){
 		Service srv = findService(iType);
-		return srv.reply!=null?srv.reply.equals("true"):false;
+		if (srv!=null) {
+			return srv.reply!=null?srv.reply.equals("true"):false;
+		} 
+		return false;
 	}
 	
 	public static Reply waitForMessage(String iHash){
@@ -160,6 +188,89 @@ public class Protocol {
 		
 		return hash;
 
+	}
+	
+	public static void statsLight(){
+		
+		if (streamLight!=null) {
+			try {
+				streamLight.updateValue(M2XClient.jsonSerialize(new HashMap<String, Object>()
+					{{
+					put("value", 1);
+				}}));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	public static void statsLightOn(){
+		
+		if (streamLightOn!=null) {
+			try {
+				streamLightOn.updateValue(M2XClient.jsonSerialize(new HashMap<String, Object>()
+					{{
+					put("value", 1);
+				}}));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	public static void statsLightOff(){
+		
+		if (streamLightOff!=null) {
+			try {
+				streamLightOff.updateValue(M2XClient.jsonSerialize(new HashMap<String, Object>()
+					{{
+					put("value", 1);
+				}}));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	public static void statsTemperature(final String iValue){
+		
+		if (streamLightOn!=null) {
+			try {
+				streamLightOn.updateValue(M2XClient.jsonSerialize(new HashMap<String, Object>()
+					{{
+					put("value", new Float(iValue).floatValue());
+				}}));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	public static void stats(String iType, String iActionCode, String iValue){
+		
+		if (iType.equals("light")){
+			statsLight();
+			
+			if (iActionCode.equals("on")) {
+				statsLightOn();
+			} else if (iActionCode.equals("off")) {
+				statsLightOff();
+			}
+			
+		} else if (iType.equals("temperature")) {
+			
+			statsTemperature(iValue);
+			
+		}
+		
 	}
 
 }

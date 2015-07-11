@@ -55,9 +55,13 @@ public class Services {
 		LOGGER.info("Executing simple code with argument :"+iType);
 		String hash = Protocol.callServices(iType, iActionCode);
 		
+		Protocol.stats(iType, iActionCode, "");
+		
 		if (Protocol.isReplyExpected(iType)){
 			Reply aReply = Protocol.waitForMessage(hash);
-			return new String[]{aReply.getActionsValue(iType)};
+			String aValue = aReply.getActionsValue(iType);
+			Protocol.stats(iType, iActionCode, aValue);
+			return new String[]{aValue};
 		}
 		
 		return new String[]{"OK"};
