@@ -1,8 +1,12 @@
 package server;
 
 
+import generic.ws.restjson.services.Services;
+
 import java.net.*;
 import java.io.*;
+
+import org.apache.log4j.Logger;
 
 import server.transaction.Entity;
 import server.transaction.Query;
@@ -12,9 +16,12 @@ import com.google.gson.Gson;
 
 public class ServerThread extends Thread {
 
+	protected static final Logger LOGGER = Logger.getLogger(ServerThread.class.getName());
+	
 	private Socket socket = null;
 	public MsgThreadSender senderThread;
 	DataOutputStream out; 
+	String clientname;
 
 	public ServerThread(Socket socket) {
 		super("ServerThread");
@@ -84,6 +91,8 @@ public class ServerThread extends Thread {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			LOGGER.info("Removing client:"+clientname);
+			Protocol._serviceMap.remove(clientname);
 		}
 
 		return null;

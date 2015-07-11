@@ -32,6 +32,8 @@ public class Protocol {
         		
         		Reply reply = (Reply) theInput._object;
         		if (reply.services!=null) {
+        			
+        			thread.clientname = reply.from;
         			for (Service srv:reply.services) {
         				srv._thread = thread;
         			}
@@ -51,7 +53,7 @@ public class Protocol {
     	
     }
     
-    public static void callServices(String iType){
+    public static void callServices(String iType, String iActionCode){
     	
     	for (Vector<Service> services:_serviceMap.values()){
     	
@@ -60,6 +62,7 @@ public class Protocol {
     				
     				Action act = new Action();
     				act.type = iType;
+    				act.actioncode = iActionCode;
     				
     				Query aQuery = new Query();
     				aQuery.from = "server";
