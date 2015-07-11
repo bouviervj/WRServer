@@ -1,4 +1,4 @@
-## GenRestJson-J (Generic Rest/Json Java Project)
+## WRServer 
 
 This is a simple example that shows how to deploy a simple http/https server serving rest/json services in java.
 It uses jetty, gson, jersey , everything is packaged in a single jar that embeds the server. This project can help
