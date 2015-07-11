@@ -17,6 +17,7 @@ import javax.ws.rs.core.SecurityContext;
 import org.apache.log4j.Logger;
 
 import server.Protocol;
+import server.transaction.Reply;
 import server.transaction.Service;
 
 @Path("/v1")
@@ -53,6 +54,12 @@ public class Services {
 	public String[] callservice( @Context SecurityContext sc, @PathParam("type") String iType,  @PathParam("actioncode") String iActionCode  ) {
 		LOGGER.info("Executing simple code with argument :"+iType);
 		String hash = Protocol.callServices(iType, iActionCode);
+		
+		if (Protocol.isReplyExpected(iType)){
+			Reply aReply = Protocol.waitForMessage(hash);
+			return new String[]{aReply.getActionsValue(iType)};
+		}
+		
 		return new String[]{"OK"};
 	}
 	

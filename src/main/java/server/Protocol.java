@@ -23,6 +23,7 @@ public class Protocol {
 	private int state = WAITING;
 
 	public static HashMap<String,Vector<Service>> _serviceMap = new HashMap<String,Vector<Service>>();
+	public static HashMap<String,Reply> _repliesMap = new HashMap<String,Reply>();
 
 
 	public Message processInput(ServerThread thread, Message theInput) {
@@ -43,6 +44,8 @@ public class Protocol {
 						srv._thread = thread;
 					}
 					publishServices(reply);
+				} else if (reply.actions!=null) {
+					_repliesMap.put(reply.to, reply);
 				}
 
 			}
@@ -91,6 +94,42 @@ public class Protocol {
 
 	}
 
+	public static Service findService(String iType){
+		for (Vector<Service> services:_serviceMap.values()){
+			for (Service srv:services) {
+				if (srv.type.equals(iType)) {
+					return srv;
+				}
+				
+			}
+		}
+		return null;
+	}
+	
+	public static boolean isReplyExpected(String iType){
+		Service srv = findService(iType);
+		return srv.reply!=null?srv.reply.equals("true"):false;
+	}
+	
+	public static Reply waitForMessage(String iHash){
+		
+		boolean found = false;
+		while (!found) {
+			if (_repliesMap.containsKey(iHash)) {
+				found = true;
+			} else {
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return _repliesMap.get(iHash);
+		
+	}
+	
 	public static String callServices(String iType, String iActionCode){
 
 		String hash = timeHash();
